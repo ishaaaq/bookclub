@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Original mark: four cloth-bound spines on a shelf. Not an official SBC logo. -->
+  <rect width="512" height="512" fill="#f6f1e7"/>
+  <rect x="112" y="150" width="62" height="230" rx="6" fill="#7a2e2a"/>
+  <rect x="184" y="120" width="70" height="260" rx="6" fill="#2c3e5c"/>
+  <rect x="264" y="168" width="56" height="212" rx="6" fill="#2f4a3a"/>
+  <rect x="351" y="140" width="66" height="240" rx="6" fill="#6b4e2e" transform="rotate(-8 417 380)"/>
+  <rect x="128" y="190" width="30" height="6" rx="3" fill="#f6f1e7" opacity=".7"/>
+  <rect x="202" y="160" width="34" height="6" rx="3" fill="#f6f1e7" opacity=".7"/>
+  <rect x="278" y="208" width="28" height="6" rx="3" fill="#f6f1e7" opacity=".7"/>
+  <rect x="96" y="380" width="330" height="22" rx="4" fill="#1f1b16"/>
+</svg>
