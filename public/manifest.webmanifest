@@ -1,0 +1,10 @@
+{
+  "name": "SBC Abuja",
+  "short_name": "SBC Abuja",
+  "description": "Silent Book Club Abuja: check in with your book.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f6f1e7",
+  "theme_color": "#f6f1e7",
+  "icons": []
+}

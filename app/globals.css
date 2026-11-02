@@ -1,0 +1,25 @@
+@import "tailwindcss";
+
+/* Warm paper and ink (README §10). One accent from old cloth bindings. */
+@theme {
+  --color-paper: #f6f1e7;
+  --color-paper-deep: #ece4d4;
+  --color-ink: #1f1b16;
+  --color-ink-soft: #5b5248;
+  --color-binding: #7a2e2a;
+  --font-serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
