@@ -1,6 +1,7 @@
 import { createBrowserClient } from "@supabase/ssr";
+import type { Database } from "./database.types";
 
-/** Supabase client for client components (realtime shelf, check-in). */
+/** Supabase client for client components (realtime shelf). */
 export function createClient() {
-  return createBrowserClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!);
+  return createBrowserClient<Database>(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!);
 }
