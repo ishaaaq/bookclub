@@ -454,6 +454,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      book_reader_counts: {
+        Args: { p_chapter: string; p_books: string[] }
+        Returns: {
+          book_id: string
+          readers: number
+        }[]
+      }
       chapter_today: {
         Args: { p_chapter: string }
         Returns: string
@@ -473,6 +480,10 @@ export type Database = {
           venue_name: string
           is_open: boolean
         }[]
+      }
+      claim_guest: {
+        Args: { p_guest_user: string; p_user: string }
+        Returns: undefined
       }
       current_member_id: {
         Args: { p_chapter: string }
@@ -509,6 +520,10 @@ export type Database = {
       my_member_ids: {
         Args: Record<PropertyKey, never>
         Returns: string[]
+      }
+      sync_guest_status: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
       }
     }
     Enums: {

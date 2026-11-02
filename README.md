@@ -226,6 +226,8 @@ pnpm test:e2e    # Playwright: guest check-in flow on a mobile viewport
 
 Check-in only opens on a meetup's date. To try it on another day, the e2e tests set `public.dev_clock` (service role only, empty in production) so that `chapter_today()` returns a meetup date, and clear it afterwards. Set `E2E_BASE_URL` if your dev server isn't on port 3000.
 
+The service worker only registers in production builds (`pnpm build && pnpm start`), so offline behaviour can't be tested under `pnpm dev`. Run e2e against a production server too (`E2E_BASE_URL=http://localhost:<port>`): dev-mode compile times can push the 15-second check-in budget over.
+
 To sign in as the local host, request a magic link for `host@example.test` and open it from the local inbox at http://localhost:54324.
 
 ---

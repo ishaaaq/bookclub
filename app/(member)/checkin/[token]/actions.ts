@@ -1,11 +1,12 @@
 "use server";
 
-import { redirect } from "next/navigation";
 import { cacheBook, parseCandidate } from "@/lib/books";
 import { ensureMember, UserError } from "@/lib/club";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
 
-export type CheckinResult = { error: string };
+// Returns where to go rather than calling redirect(): the form treats a thrown call as "offline"
+// and queues it, so success must not throw.
+export type CheckinResult = { error: string } | { shelfUrl: string };
 
 const FRIENDLY: Record<string, string> = {
   "invalid check-in code": "This check-in code doesn't work. Scan the QR code at the venue again.",
@@ -13,7 +14,7 @@ const FRIENDLY: Record<string, string> = {
   "check-in is only open on the day of the meetup": "Check-in is only open on the day of the meetup.",
 };
 
-/** Guest identity (if needed) → cache the book → check in. Redirects to the shelf on success. */
+/** Guest identity (if needed) → cache the book → check in. Returns the shelf URL on success. */
 export async function checkIn(token: string, displayName: string | null, rawBook: unknown): Promise<CheckinResult> {
   const book = parseCandidate(rawBook);
   if (!book) return { error: "Pick a book, or type its title." };
@@ -35,5 +36,5 @@ export async function checkIn(token: string, displayName: string | null, rawBook
     console.error("check-in failed", e);
     return { error: "Something went wrong. Try again." };
   }
-  redirect(`/shelf/${meetupId}?checkedIn=1`);
+  return { shelfUrl: `/shelf/${meetupId}?checkedIn=1` };
 }

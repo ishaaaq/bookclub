@@ -1,5 +1,6 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { rememberGuest } from "@/lib/guest";
 import { createClient } from "@/lib/supabase/server";
 
 // Email magic link + Google (README §3). Members never need this to check in; hosts do.
@@ -19,6 +20,7 @@ async function sendMagicLink(formData: FormData) {
   const email = String(formData.get("email") ?? "").trim();
   const next = safeNext(String(formData.get("next") ?? ""));
   const supabase = await createClient();
+  await rememberGuest(supabase);
   const { error } = await supabase.auth.signInWithOtp({
     email,
     options: { emailRedirectTo: await callbackUrl(next) },
@@ -30,6 +32,7 @@ async function signInWithGoogle(formData: FormData) {
   "use server";
   const next = safeNext(String(formData.get("next") ?? ""));
   const supabase = await createClient();
+  await rememberGuest(supabase);
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: { redirectTo: await callbackUrl(next) },
@@ -48,7 +51,7 @@ export default async function SignInPage({
   return (
     <div className="space-y-6">
       <h1 className="font-serif text-2xl">Sign in</h1>
-      <p className="text-ink-soft">You don&rsquo;t need an account to check in. Sign in to keep your history across phones, or to host.</p>
+      <p className="text-ink-soft">You don&rsquo;t need an account to check in. Sign in to keep your passport across phones (any check-ins you made as a guest come with you), or to host.</p>
 
       <form action={sendMagicLink} className="space-y-3">
           <input type="hidden" name="next" value={next} />

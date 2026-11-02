@@ -25,9 +25,10 @@ test("check-in is closed before the meetup day", async ({ page }) => {
 
 test("a first-timer checks in with a book and lands on the shelf", async ({ page }) => {
   await setDevClock("2026-11-07");
-  const started = Date.now();
-
+  // The budget is for the member, not for `pnpm dev` compiling pages: warm the shelf route first.
+  await page.goto("/shelf/d0000000-0000-4000-8000-000000000001");
   await page.goto(`/checkin/${TOKEN}`);
+  const started = Date.now();
   await page.getByLabel(/Your name/).fill(guest);
   await page.getByLabel("What are you reading?").fill("Americanah");
   // A club book from the seed, so the test doesn't depend on Open Library being up.
@@ -47,7 +48,7 @@ test("a first-timer checks in with a book and lands on the shelf", async ({ page
   await page.getByLabel("Title").fill("An E2E Hand-Typed Book");
   await page.getByRole("button", { name: "Check in" }).click();
   await expect(page).toHaveURL(/\/shelf\//);
-  await expect(page.getByRole("listitem").filter({ hasText: guest })).toContainText("An E2E Hand-Typed Book");
+  await expect(page.locator(`li[id^="book-"]`).filter({ hasText: guest })).toContainText("An E2E Hand-Typed Book");
 });
 
 test("the shelf hides members who opted out", async ({ page }) => {

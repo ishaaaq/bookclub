@@ -1,11 +1,37 @@
 "use client";
 
-import { useEffect, useRef, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { BookCover } from "@/components/BookCover";
 import type { BookCandidate } from "@/lib/books";
 import { checkIn } from "./actions";
 
 // Name (first time only) → search → tap a cover. The whole check-in is one screen (< 15 s).
+// On a dropped connection the check-in is kept in localStorage and sent when the phone is back online (F6).
+
+type Pending = { name: string | null; book: BookCandidate };
+
+function queueKey(token: string) {
+  return `sbc-pending-checkin:${token}`;
+}
+
+function readQueue(token: string): Pending | null {
+  try {
+    const raw = localStorage.getItem(queueKey(token));
+    return raw ? (JSON.parse(raw) as Pending) : null;
+  } catch {
+    return null;
+  }
+}
+
+function writeQueue(token: string, pending: Pending | null) {
+  try {
+    if (pending) localStorage.setItem(queueKey(token), JSON.stringify(pending));
+    else localStorage.removeItem(queueKey(token));
+  } catch {
+    // Private mode or storage full: the member can still tap again.
+  }
+}
 
 export function CheckinForm({ token, needsName }: { token: string; needsName: boolean }) {
   const [name, setName] = useState("");
@@ -15,7 +41,48 @@ export function CheckinForm({ token, needsName }: { token: string; needsName: bo
   const [manual, setManual] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
+  const [queued, setQueued] = useState<Pending | null>(null);
+  const router = useRouter();
   const nameRef = useRef<HTMLInputElement>(null);
+
+  const send = useCallback(
+    (p: Pending) => {
+      if (!navigator.onLine) {
+        writeQueue(token, p);
+        setQueued(p);
+        return;
+      }
+      writeQueue(token, null);
+      startTransition(async () => {
+        try {
+          const result = await checkIn(token, p.name, p.book);
+          setQueued(null);
+          if ("error" in result) setError(result.error);
+          else router.push(result.shelfUrl);
+        } catch {
+          // The request never reached us: keep it and retry when the connection is back.
+          writeQueue(token, p);
+          setQueued(p);
+        }
+      });
+    },
+    [token, router],
+  );
+
+  // Retry a queued check-in on load and whenever the phone comes back online.
+  useEffect(() => {
+    const retry = () => {
+      const p = readQueue(token);
+      if (p) send(p);
+    };
+    const p = readQueue(token);
+    if (p) {
+      setQueued(p);
+      if (navigator.onLine) send(p);
+    }
+    window.addEventListener("online", retry);
+    return () => window.removeEventListener("online", retry);
+  }, [token, send]);
 
   useEffect(() => {
     const q = query.trim();
@@ -49,10 +116,7 @@ export function CheckinForm({ token, needsName }: { token: string; needsName: bo
       return;
     }
     setError(null);
-    startTransition(async () => {
-      const result = await checkIn(token, needsName ? name : null, book);
-      if (result?.error) setError(result.error);
-    });
+    send({ name: needsName ? name : null, book });
   }
 
   const input = "mt-1 block w-full rounded-lg border border-ink/20 bg-white px-3 py-3";
@@ -139,6 +203,17 @@ export function CheckinForm({ token, needsName }: { token: string; needsName: bo
       )}
 
       {pending && <p role="status" className="text-sm text-ink-soft">Checking you in…</p>}
+      {queued && !pending && (
+        <div role="status" className="space-y-2 rounded-lg bg-paper-deep p-4">
+          <p>
+            No signal right now. We&rsquo;ll check you in with <em>{queued.book.title}</em> as soon as you&rsquo;re back online. Keep this
+            page open.
+          </p>
+          <button type="button" onClick={() => send(queued)} className="text-sm text-binding underline">
+            Try now
+          </button>
+        </div>
+      )}
       {error && (
         <p role="alert" className="text-binding">
           {error}

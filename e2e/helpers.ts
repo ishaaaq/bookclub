@@ -23,3 +23,29 @@ export async function deleteMembersNamed(name: string) {
     if (m.auth_user_id) await service.auth.admin.deleteUser(m.auth_user_id);
   }
 }
+
+const MAILPIT = "http://127.0.0.1:54324";
+
+/** The newest sign-in link sent to `email` by local Supabase (Mailpit). */
+export async function magicLinkFor(email: string): Promise<string> {
+  for (let i = 0; i < 20; i++) {
+    const res = await fetch(`${MAILPIT}/api/v1/search?query=${encodeURIComponent(`to:"${email}"`)}`);
+    const { messages } = (await res.json()) as { messages: { ID: string }[] };
+    if (messages?.length) {
+      const msg = (await (await fetch(`${MAILPIT}/api/v1/message/${messages[0].ID}`)).json()) as { Text: string };
+      const link = msg.Text.match(/https?:\/\/\S+\/auth\/v1\/verify\?\S+/)?.[0];
+      if (link) return link.replace(/[)\]>.,]+$/, "");
+    }
+    await new Promise((r) => setTimeout(r, 500));
+  }
+  throw new Error(`No sign-in email for ${email}`);
+}
+
+export async function deleteUserByEmail(email: string) {
+  const { data } = await service.auth.admin.listUsers({ perPage: 1000 });
+  const user = data?.users.find((u) => u.email === email);
+  if (user) {
+    await service.from("members").delete().eq("auth_user_id", user.id);
+    await service.auth.admin.deleteUser(user.id);
+  }
+}

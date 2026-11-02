@@ -120,7 +120,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
 
       <footer className="pt-4 text-center text-sm text-ink-soft">
         {member ? (
-          <>Signed in as {member.display_name}{member.is_guest ? " (guest)" : ""}</>
+          <Link href="/passport" className="underline">Your passport</Link>
         ) : (
           <Link href="/signin" className="underline">Sign in</Link>
         )}

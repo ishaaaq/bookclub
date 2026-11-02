@@ -7,6 +7,7 @@ export default defineConfig({
   fullyParallel: false, // tests share the dev clock and seed data
   workers: 1,
   retries: process.env.CI ? 1 : 0,
+  timeout: 60_000, // `pnpm dev` compiles each route on first visit
   use: {
     baseURL: process.env.E2E_BASE_URL ?? "http://localhost:3000",
     ...devices["Pixel 5"],
