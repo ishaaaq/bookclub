@@ -2,7 +2,7 @@
 -- FICTIONAL: every person here is made up. Venue names are placeholders until the host
 -- confirms the real venue and start time (README §12).
 --
--- Local logins (magic link via the local inbox at http://localhost:54324, or password):
+-- Local logins (magic link via the local inbox at http://localhost:55324, or password):
 --   host@example.test   / password123   → Amaka O., host
 --   member@example.test / password123   → Tunde B., member
 -- Check-in tokens are fixed for local testing: dev-2026-11-07 etc.

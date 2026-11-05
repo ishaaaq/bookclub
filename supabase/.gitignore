@@ -6,3 +6,6 @@
 .env.keys
 .env.local
 .env.*.local
+
+# filled-in setup scripts (real emails stay out of this public repo)
+*.local.sql

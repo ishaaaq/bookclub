@@ -24,7 +24,7 @@ export async function deleteMembersNamed(name: string) {
   }
 }
 
-const MAILPIT = "http://127.0.0.1:54324";
+const MAILPIT = "http://127.0.0.1:55324";
 
 /** The newest sign-in link sent to `email` by local Supabase (Mailpit). */
 export async function magicLinkFor(email: string): Promise<string> {
