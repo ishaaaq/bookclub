@@ -228,7 +228,7 @@ Check-in only opens on a meetup's date. To try it on another day, the e2e tests 
 
 The service worker only registers in production builds (`pnpm build && pnpm start`), so offline behaviour can't be tested under `pnpm dev`. Run e2e against a production server too (`E2E_BASE_URL=http://localhost:<port>`): dev-mode compile times can push the 15-second check-in budget over.
 
-To sign in as the local host, request a magic link for `host@example.test` and open it from the local inbox at http://localhost:54324.
+To sign in as the local host, request a magic link for `host@example.test` and open it from the local inbox at http://localhost:55324.
 
 ---
 
